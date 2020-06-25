@@ -9,5 +9,10 @@
  <p>{{ article.title }}</p>
  <a href="{% url 'articles:detail' article.pk %}">[DETAIL]</a>
  <hr>
+ {% if user in article.like_users.all %}
+ <a href="{% url 'articles:like' article.pk %}"> 좋아요 취소</a>
+ {% else %}
+ <a href="{% url 'articles:like' article.pk %}">좋아요</a>
+ {% endif %}
 {% endfor %}
 {% endblock %}

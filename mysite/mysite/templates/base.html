@@ -5,18 +5,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   {% bootstrap_css %}
+  <script src="https://kit.fontawesome.com/974786e77b.js" crossorigin="anonymous"></script>
   <title>Document</title>
 </head>
 <body>
-  <h1>{{ user.username }}</h1>
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message.message }}
+      </div>
+    {% endfor %}
+  {% endif %}
 
+  <h1>{{ user.username }}</h1>
   {% if user.is_authenticated %}
   <a href="{% url 'accounts:logout' %}">logout</a>
   <form action="{% url 'accounts:delete' %}" method="post">
     {% csrf_token %}
-    <input type="submit" value="회원 탈퇴">
+    {% buttons %}
+    <button type="submit" class="btn btn-primary">
+      회원 탈퇴
+    </button>
+    {% endbuttons %}
   </form>
   <a href="{% url 'accounts:update' %}">회원 수정</a>
+  <a href="{% url 'accounts:password' %}">비밀번호 수정</a>
   {% else %}
   <a href="{% url 'accounts:login' %}">login</a>
   <a href="{% url 'accounts:signup' %}">회원가입</a>

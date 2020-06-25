@@ -5,6 +5,8 @@ from django.contrib.auth import logout as auth_logout
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserChangeForm
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
 
 # Create your views here.
 def signup(request):    
@@ -66,3 +68,18 @@ def update(request):
         'form' : form
     }
     return render(request, 'accounts/update.html', context)
+
+@login_required
+def password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            return redirect('articles:index')
+    else :
+        form = PasswordChangeForm(request.user)
+    context = {
+        'form' : form
+    }
+    return render(request, 'accounts/password.html', context)
