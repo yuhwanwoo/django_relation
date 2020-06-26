@@ -27,6 +27,12 @@ class Article(models.Model):
         blank=True
     )
 
+    recommend_users = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='recommend_articles',
+        blank=True
+    )
+
 
     def __str__(self):
         return f'{self.pk}번째 글, {self.title}-{self.content}'

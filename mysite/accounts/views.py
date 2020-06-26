@@ -8,16 +8,21 @@ from .forms import CustomUserChangeForm
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 
+from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
+
+from .forms import CustomUserCreationForm
+
 # Create your views here.
 def signup(request):    
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             auth_login(request, user)
             return redirect('articles:index')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     context = {
         'form' : form
     }
@@ -83,3 +88,21 @@ def password(request):
         'form' : form
     }
     return render(request, 'accounts/password.html', context)
+
+def profile(request, username):
+    person = get_object_or_404(get_user_model(), username=username)
+    context={
+        'person' : person
+    }
+    return render(request, 'accounts/profile.html', context)
+
+def follow(request, user_pk):
+    # person에 담긴 user_pk값을 가진 유저는
+    # 프로필의 주인이다.
+    # request.user는 나. 요청을 보내온 사용자이다
+    person = get_object_or_404(get_user_model(), pk=user_pk)
+    if request.user in person.followers.all():
+        person.followers.remove(request.user)
+    else :
+        person.followers.add(request.user)
+    return redirect('accounts:profile',person.username)
